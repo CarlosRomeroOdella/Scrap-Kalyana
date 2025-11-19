@@ -1,0 +1,121 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Kalyana Scraper Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:32px;color:#1f2937}
+    h1{margin-bottom:4px} .muted{color:#6b7280}
+    form{margin:16px 0;padding:16px;border:1px solid #e5e7eb;border-radius:12px}
+    label{display:block;margin:.25rem 0 .5rem 0;font-weight:600}
+    input[type=text], input[type=date]{width:100%;max-width:420px;padding:10px;border:1px solid #d1d5db;border-radius:10px}
+    button{background:#111827;color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
+    button.secondary{background:#374151}
+    .row{display:flex;gap:16px;flex-wrap:wrap}
+    .card{flex:1;min-width:280px}
+    .hint{font-size:12px;color:#6b7280;margin-top:6px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+    .badge{font-size:12px;padding:2px 8px;border-radius:999px;background:#eef2ff;color:#4338ca}
+    .footer{margin-top:24px;color:#6b7280}
+    code{background:#f3f4f6;padding:2px 6px;border-radius:6px}
+    .section-title{margin-top:28px;border-top:1px solid #e5e7eb;padding-top:20px}
+  </style>
+</head>
+<body>
+  <h1>Kalyana Scraper</h1>
+  <div class="muted">{{ now|date:"Y-m-d H:i" }} — Dashboard</div>
+
+  <div class="grid">
+    <div class="card">
+      <form method="post" action="{% url 'save_cookie' %}">
+        {% csrf_token %}
+        <label>Cookie de sesión (header completo <span class="badge">Cookie:</span>)</label>
+        <input type="text" name="cookie" placeholder="ci_session=...; otra_cookie=...;" value="{{ cookie_value|default:'' }}">
+        <div class="hint">Copia el valor de <code>Cookie</code> desde DevTools → Network → Headers estando loggeado en Kalyana.</div>
+        <div style="margin-top:10px">
+          <button>Guardar cookie</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <form method="get" action="{% url 'orders_year' %}">
+        <label>Pedidos del año actual</label>
+        <div class="hint">Descarga CSV usando el export oficial de Kalyana.</div>
+        <button class="secondary" formaction="{% url 'orders_year' %}">Descargar CSV</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <form method="post" action="{% url 'orders_range' %}">
+        {% csrf_token %}
+        <label>Pedidos por rango (YYYY-MM-DD)</label>
+        <div class="row">
+          <div>
+            <span class="muted">Desde</span>
+            <input type="date" name="desde" required>
+          </div>
+          <div>
+            <span class="muted">Hasta</span>
+            <input type="date" name="hasta" required>
+          </div>
+        </div>
+        <div class="hint">Ejemplo: 2025-10-01 a 2025-11-01</div>
+        <div style="margin-top:10px">
+          <button>Descargar CSV</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <form method="post" action="{% url 'orders_all_since' %}">
+        {% csrf_token %}
+        <label>Pedidos desde una fecha inicial</label>
+        <div class="row">
+          <div>
+            <span class="muted">Inicio</span>
+            <input type="date" name="inicio" required>
+          </div>
+        </div>
+        <div class="hint">Ejemplo: 2022-01-01 (fusiona por años hasta hoy y genera un CSV único).</div>
+        <div style="margin-top:10px">
+          <button>Descargar CSV completo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <h2 class="section-title">Comisiones de Médicos (listado 21)</h2>
+  <div class="grid">
+    <div class="card">
+      <form method="post" action="{% url 'commissions_month' %}">
+        {% csrf_token %}
+        <label>Comisiones por mes (formato M-YYYY)</label>
+        <input type="text" name="mes" placeholder="9-2025" required>
+        <div class="hint">Ejemplo directo del sistema: 9-2025</div>
+        <div style="margin-top:10px">
+          <button>Descargar CSV del mes</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <form method="post" action="{% url 'commissions_all_from' %}">
+        {% csrf_token %}
+        <label>Comisiones desde un mes inicial</label>
+        <input type="text" name="inicio_mes" placeholder="4-2020" required>
+        <div class="hint">Empieza en 4-2020 y avanza mes por mes hasta el mes actual, fusionando todo en un CSV único.</div>
+        <div style="margin-top:10px">
+          <button>Descargar CSV completo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="footer">
+    Tip: Si falla por SSL/verify, puedes ejecutar con <code>export PYTHONWARNINGS="ignore:Unverified HTTPS request"</code>.
+  </div>
+</body>
+</html>
