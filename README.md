@@ -11,7 +11,7 @@ Incluye:
 chmod +x bootstrap_mac.sh
 ./bootstrap_mac.sh
 ```
-
+Juevesito
 
 Abre: http://127.0.0.1:8000
 
