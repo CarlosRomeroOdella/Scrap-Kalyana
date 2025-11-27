@@ -12,6 +12,7 @@ chmod +x bootstrap_mac.sh
 ./bootstrap_mac.sh
 ```
 
+
 Abre: http://127.0.0.1:8000
 
 1. Pega el header completo `Cookie` (DevTools → Network → Headers, ya loggeado).
